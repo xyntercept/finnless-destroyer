@@ -29,10 +29,7 @@ function checkGrimoire() {
 
 function initFD() {
   Game.Notify("Finnless destroyer","Open options menu to configure mod settings. If a desired seed is found, you will be notified upon reincarnation.",[17,2]);
-
-  Game.prefs.lookahead = 10000;
-  Game.prefs.fthofRange = 15;
-  Game.prefs.fthofNeeded = 10;
+  resetPrefs();
 
   // Thanks Mr. Lander
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
@@ -43,6 +40,13 @@ function initFD() {
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="getLookahead();">'+loc("Set lookahead")+'</a><label>('+loc("set the maximum amount of casts to search; current value: <b>" + Game.prefs.lookahead + "</b>")+')</label></div>'+`));
   
   Game.registerHook('reincarnate',function(){checkSpells()});
+  Game.registerHook('reset',function(wipe){if (wipe) resetPrefs()};
+}
+
+function resetPrefs() {
+  Game.prefs.lookahead = 10000;
+  Game.prefs.fthofRange = 15;
+  Game.prefs.fthofNeeded = 10;
 }
 
 function checkSpells() {
@@ -72,14 +76,18 @@ function checkSpells() {
 
 Game.registerMod("Finnless Destroyer", {
   init:function(){
-    checkGrimoire()
+    checkGrimoire();
   },
 
   save:function(){
-
+    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded;
+    return str;
   },
 
-  load:function(){
-
+  load:function(str){
+    let prefs = str.split("|");
+    Game.prefs.lookahead = prefs[0];
+    Game.prefs.fthofRange = prefs[1];
+    Game.prefs.fthofNeeded = prefs[2];
   }
 });
