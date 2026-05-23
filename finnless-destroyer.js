@@ -40,7 +40,7 @@ function initFD() {
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="getLookahead();">'+loc("Set lookahead")+'</a><label>('+loc("set the maximum amount of casts to search; current value: <b>" + Game.prefs.lookahead + "</b>")+')</label></div>'+`));
   
   Game.registerHook('reincarnate',function(){checkSpells()});
-  Game.registerHook('reset',function(wipe){if (wipe) resetPrefs()};
+  Game.registerHook('reset',function(wipe){if (wipe) resetPrefs()});
 }
 
 function resetPrefs() {
