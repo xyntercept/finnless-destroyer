@@ -66,8 +66,8 @@ function initFD() {
 
 function resetPrefs() {
   Game.prefs.lookahead = 10000;
-  Game.prefs.fthofRange = 15;
-  Game.prefs.fthofNeeded = 10;
+  Game.prefs.fthofRange = 12;
+  Game.prefs.fthofNeeded = 8;
   Game.prefs.notifyFailure = 0;
 }
 
