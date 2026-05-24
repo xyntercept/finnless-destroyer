@@ -1,5 +1,18 @@
-// Will this actually destroy finnless? Remains to be seen
+/*
+v1.0
+2026-05-23
+- Checks for number of GFDs within a range in the lookahead
+- All 3 variables can be freely changed in options
 
+v1.1
+2026-05-24
+- Added the ability to display the result again
+- Fixed a bug where it freezes upon reincarnation if a save with the mod's save data is imported
+- Made the final list display the start of the combo, rather than the end
+- Added an options to show a notification even when the search fails
+*/
+
+// Will this actually destroy finnless? Remains to be seen
 // I also love stealing code from sisisem
 function getLookahead() {
     Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.lookahead=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
@@ -32,13 +45,21 @@ function initFD() {
   resetPrefs();
 
   // Thanks Mr. Lander
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="checkSpells();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings.<br>Shortcut: shift+f")+')</label></div>'+`));
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`game will reload")+')</label><br>'+`,`game will reload")+')</label><br>'+
+    Game.WritePrefButton('notifyFailure','notifyFailureButton',loc("Notify on failure ")+ON,loc("Notify on failure ")+OFF)+'<label>('+loc("when reincarnating, notify even if no results were found")+')</label><br>'+`));
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="getFthofNeeded();">'+loc("Set desired G!FtHoFs")+'</a><label>('+loc("set how many GFD FtHoFs near each other to search for; current value: <b>" + Game.prefs.fthofNeeded + "</b>")+')</label></div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="getFthofRange();">'+loc("Set range for G!FtHoFs")+'</a><label>('+loc("set the range within which the GFD FtHoFs must lie; current value: <b>" + Game.prefs.fthofRange + "</b>")+')</label></div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="getLookahead();">'+loc("Set lookahead")+'</a><label>('+loc("set the maximum amount of casts to search; current value: <b>" + Game.prefs.lookahead + "</b>")+')</label></div>'+`));
-  
+
+  AddEvent(window,'keydown',function(e) {
+    if (e.shiftKey && e.keyCode==70) checkSpells();
+  })
+    
   Game.registerHook('reincarnate',function(){checkSpells()});
   Game.registerHook('reset',function(wipe){if (wipe) resetPrefs()});
 }
@@ -47,6 +68,7 @@ function resetPrefs() {
   Game.prefs.lookahead = 10000;
   Game.prefs.fthofRange = 15;
   Game.prefs.fthofNeeded = 10;
+  Game.prefs.notifyFailure = 0;
 }
 
 function checkSpells() {
@@ -69,8 +91,15 @@ function checkSpells() {
   Math.seedrandom();
   if (neededFthofsLocs.length > 0) {
     PlaySound('snd/spell.mp3');
+    for (let i = 0; i < neededFthofsLocs.length; i++) {
+      neededFthofsLocs[i]-=Game.prefs.fthofRange;
+    }
     console.log(neededFthofsLocs);
     Game.Notify("Success!","Total of " + neededFthofsLocs.length + " locations found.<br><br>The first is at spell no. <b>" + neededFthofsLocs[0] + "</b>.<br><br> Go to the console to see them all!",[17,2]);
+  }
+  else if (Game.prefs.notifyFailure == 1) {
+    PlaySound('snd/spellFail.mp3');
+    Game.Notify("Failure...","No locations with specified settings were found.",[17,15]);
   }
 }
 
@@ -80,14 +109,15 @@ Game.registerMod("Finnless Destroyer", {
   },
 
   save:function(){
-    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded;
+    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded +"|"+ Game.prefs.notifyFailure;
     return str;
   },
 
   load:function(str){
     let prefs = str.split("|");
-    Game.prefs.lookahead = prefs[0];
-    Game.prefs.fthofRange = prefs[1];
-    Game.prefs.fthofNeeded = prefs[2];
+    Game.prefs.lookahead = parseInt(prefs[0]);
+    Game.prefs.fthofRange = parseInt(prefs[1]);
+    Game.prefs.fthofNeeded = parseInt(prefs[2]);
+    Game.prefs.notifyFailure = parseInt(prefs[3]);
   }
 });
