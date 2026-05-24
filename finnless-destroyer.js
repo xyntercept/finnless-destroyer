@@ -9,7 +9,7 @@ v1.1
 - Added the ability to display the result again
 - Fixed a bug where it freezes upon reincarnation if a save with the mod's save data is imported
 - Made the final list display the start of the combo, rather than the end
-- Added an options to show a notification even when the search fails
+- Added an option to show a notification even when the search fails
 */
 
 // Will this actually destroy finnless? Remains to be seen
