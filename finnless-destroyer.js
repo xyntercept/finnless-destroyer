@@ -46,7 +46,7 @@ function initFD() {
 
   // Thanks Mr. Lander
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
-    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="checkSpells();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings.<br>Shortcut: shift+f")+')</label></div>'+`));
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="checkSpells();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings.<br>Shortcut: shift+F")+')</label></div>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`game will reload")+')</label><br>'+`,`game will reload")+')</label><br>'+
     Game.WritePrefButton('notifyFailure','notifyFailureButton',loc("Notify on failure ")+ON,loc("Notify on failure ")+OFF)+'<label>('+loc("when reincarnating, notify even if no results were found")+')</label><br>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
