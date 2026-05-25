@@ -1,4 +1,6 @@
 /*
+GET THE MOD: javascript:(function(){Game.LoadMod('https://raw.githack.com/xyntercept/finnless-destroyer/main/finnless-destroyer.js')})()
+
 v1.0
 2026-05-23
 - Checks for number of GFDs within a range in the lookahead
