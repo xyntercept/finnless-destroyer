@@ -3,6 +3,7 @@ v1.0
 2026-05-23
 - Checks for number of GFDs within a range in the lookahead
 - All 3 variables can be freely changed in options
+- Nothing good takes more than a day to make
 
 v1.1
 2026-05-24
