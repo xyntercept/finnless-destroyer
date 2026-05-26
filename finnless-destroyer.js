@@ -22,6 +22,7 @@ v1.3
 2026-05-26
 - Rewrote how the spell random values are obtained
 - Added an option to only add GFD FtHoFs is they could realistically resolve on a BS
+- Fixed a bug where only the first result would be successfully logged to the console
 */
 
 // Will this actually destroy finnless? Remains to be seen
