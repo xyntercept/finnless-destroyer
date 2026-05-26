@@ -183,9 +183,10 @@ function checkSpells() {
 
     while (fthofs[0] <= i-maxLength) fthofs.shift();
 
-    if (fthofs.length >= Game.prefs.fthofNeeded && (neededFthofsLocs[neededFthofsLocs.length-1]-1 < i-maxLength || neededFthofsLocs.length == 0)) {
-      neededFthofsLocs.push([i+1+spells,maxLength]);
+    if (fthofs.length >= Game.prefs.fthofNeeded && neededFthofsLocs.length > 0) {
+      if (neededFthofsLocs[neededFthofsLocs.length-1][0]-1 < i+spells-maxLength) neededFthofsLocs.push([i+1+spells,maxLength]);
     }
+    else if (fthofs.length >= Game.prefs.fthofNeeded) neededFthofsLocs.push([i+1+spells,maxLength]);
   }
     
   if (neededFthofsLocs.length > 0) {
