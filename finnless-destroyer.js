@@ -212,7 +212,7 @@ Game.registerMod("Finnless Destroyer", {
   },
 
   save:function(){
-    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips;
+    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips +"|"+ Game.prefs.checkResolve;
     return str;
   },
 
@@ -223,5 +223,6 @@ Game.registerMod("Finnless Destroyer", {
     Game.prefs.fthofNeeded = parseInt(prefs[2]);
     Game.prefs.notifyFailure = parseInt(prefs[3]);
     Game.prefs.useSkips = parseInt(prefs[4]);
+    Game.prefs.checkResolve = parseInt(prefs[5]);
   }
 });
