@@ -3,7 +3,7 @@ GET THE MOD: javascript:(function(){Game.LoadMod('https://raw.githack.com/xynter
 
 v1.0
 2026-05-23
-- Checks for number of GFDs within a range in the lookahead
+- Checks for number of GFD FtHoFs within a range in the lookahead
 - All 3 variables can be freely changed in options
 - Nothing good takes more than a day to make
 
@@ -17,23 +17,66 @@ v1.1
 v1.2
 2026-05-25
 - Added an option to skip SE successes and RAs
+
+v1.3
+2026-05-26
+- Rewrote how the spell random values are obtained
+- Added an option to only add GFD FtHoFs is they could realistically resolve on a BS
 */
 
 // Will this actually destroy finnless? Remains to be seen
 // I also love stealing code from sisisem
 function setLookahead() {
-    Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.lookahead=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
-    l('textareaPrompt').focus();
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.lookahead=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+  l('textareaPrompt').focus();
 }
 
 function setFthofRange() {
-    Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.fthofRange=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
-    l('textareaPrompt').focus();
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.fthofRange=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+  l('textareaPrompt').focus();
 }
 
 function setFthofNeeded() {
-    Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.fthofNeeded=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
-    l('textareaPrompt').focus();
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.fthofNeeded=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+  l('textareaPrompt').focus();
+}
+
+function getFthofResult(spellCount,change = 0) {
+  Math.seedrandom(Game.seed+'/'+spellCount);
+  Math.random();
+  Math.random();
+  Math.random();
+  if (change == 1) Math.random();
+  choices = [ ];
+  choices.push("Frenzy","Lucky","Click Frenzy");
+  if (Math.random() < 0.1) choices.push('Cookie Storm', 'Cookie Storm', 'Blab');
+  if (Math.random() < 0.25) choices.push('Building Special');
+  if (Math.random() < 0.15) choices = ['Cookie Storm Drop'];
+  if (Math.random() < 0.0001) choices.push('Free Sugar Lump');
+  return choose(choices);
+}
+
+function isResolvable(index,spellsList) {
+  let points = 0;
+
+  if (spellsList[index][0] > 0.125 && spellsList[index][0] < 0.25) {
+    for (let i = 1; i < 7; i++) {
+      if ((spellsList[index+i][1] === "Building Special" || spellsList[index+i][2] === "Building Special") && spellsList[index+i][0] < 0.5) return 1;
+      else if (spellsList[index+i][0] > 0.125 && spellsList[index+i][0] < 0.25) points += 0;
+      else if ((spellsList[index+i][0] > 0.375 && spellsList[index+i][0] < 0.5) || (spellsList[index+i][0] > 0.75 && spellsList[index+i][0] < 0.875) || (spellsList[index+i][0] > 0.25 && spellsList[index+i][0] < 2/7)) points += 1;
+      else points += 2;
+      if (points > 3) return 0;
+    }
+  }
+  else {
+    for (let i = 1; i < 3; i++) {
+      if ((spellsList[index+i][1] === "Building Special" || spellsList[index+i][2] === "Building Special") && spellsList[index+i][0] < 0.5) return 1;
+      else if (spellsList[index+i][0] > 1/7 && spellsList[index+i][0] < 2/7) points += 0;
+      else points += 1;
+      if (points > 1) return 0;
+    }
+  }
+  return 0;
 }
 
 // will not load the mod until grimoire has been loaded
@@ -59,6 +102,8 @@ function initFD() {
     Game.WritePrefButton('notifyFailure','notifyFailureButton',loc("Notify on failure ")+ON,loc("Notify on failure ")+OFF)+'<label>('+loc("when reincarnating, notify even if no results were found")+')</label><br>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`game will reload")+')</label><br>'+`,`game will reload")+')</label><br>'+
     Game.WritePrefButton('useSkips','useSkipsButton',loc("Skip SE success & RA ")+ON,loc("Skip SE success & RA ")+OFF)+'<label>('+loc("skip GFD casts of Spontaneous Edifice success and Resurrect Abomination when counting combo length")+')</label><br>'+`));
+  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`game will reload")+')</label><br>'+`,`game will reload")+')</label><br>'+
+    Game.WritePrefButton('checkResolve','checkResolveButton',loc("Check G!FtHoF resolve ")+ON,loc("Check G!FtHoF resolve ")+OFF)+'<label>('+loc("look for nearby building specials that GFD FtHoFs could resolve on, including offset abuse")+')</label><br>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setFthofNeeded();">'+loc("Set desired G!FtHoFs")+'</a><label>('+loc("set how many GFD FtHoFs near each other to search for; current value: <b>" + Game.prefs.fthofNeeded + "</b>")+')</label></div>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`Autosave OFF')+'</div>'+`,`Autosave OFF')+'</div>'+
@@ -83,6 +128,7 @@ function resetPrefs() {
   Game.prefs.fthofNeeded = 8;
   Game.prefs.notifyFailure = 0;
   Game.prefs.useSkips = 1;
+  Game.prefs.checkResolve = 1;
 }
 
 function checkSpells() {
@@ -91,22 +137,35 @@ function checkSpells() {
   let neededFthofsLocs = [ ];
   let spells = Game.Objects["Wizard tower"].minigame.spellsCastTotal;
   let maxLength = Game.prefs.fthofRange;
-  
-  for (let i = spells; i < spells + Game.prefs.lookahead; i++)
+
+  // get all results in an aray before analyzing
+  let spellsList = [ ];
+  for (let i = spells; i < spells + Game.prefs.lookahead; i++) {
+    let spellRes = [ ];
+    Math.seedrandom(Game.seed+'/'+i);
+    spellRes.push(Math.random());
+    spellRes.push(getFthofResult(i));
+    spellRes.push(getFthofResult(i,1));
+    spellsList.push(spellRes);
+  }
+
+  // don't wanna pull an orteil
+  Math.seedrandom();
+    
+  for (let i = 0; i < Game.prefs.lookahead; i++)
   {
     // add g!fthofs to array
-    Math.seedrandom(Game.seed+'/'+i);
-    let spell = Math.random();
-    if (spell > 0.125 && spell < 0.25) fthofs.push(i);
+    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 0.25 && Game.prefs.checkResolve == 0) fthofs.push(i);
+    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 2/7 && isResolvable(i,spellsList) == 1 && Game.prefs.checkResolve == 1) fthofs.push(i);
 
     if (Game.prefs.useSkips == 1) {
       // ra
-      if (spell > 0.75 && spell < 0.875) {
+      if (spellsList[i][0] > 0.75 && spellsList[i][0] < 0.875) {
         skips.push(i);
         maxLength++;
       }
       // se success
-      else if (spell > 0.375 && spell < 0.5) {
+      else if (spellsList[i][0] > 0.375 && spellsList[i][0] < 0.5) {
         Math.seedrandom(Game.seed+'/'+(i+1));
         if (Math.random() < 0.5) {
           skips.push(i)
@@ -123,12 +182,9 @@ function checkSpells() {
     while (fthofs[0] <= i-maxLength) fthofs.shift();
 
     if (fthofs.length >= Game.prefs.fthofNeeded && (neededFthofsLocs[neededFthofsLocs.length-1]-1 < i-maxLength || neededFthofsLocs.length == 0)) {
-      neededFthofsLocs.push([i+1,maxLength]);
+      neededFthofsLocs.push([i+1+spells,maxLength]);
     }
   }
-
-  // don't wanna pull an orteil
-  Math.seedrandom();
     
   if (neededFthofsLocs.length > 0) {
     PlaySound('snd/spell.mp3');
