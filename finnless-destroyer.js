@@ -23,6 +23,10 @@ v1.3
 - Rewrote how the spell random values are obtained
 - Added an option to only add GFD FtHoFs is they could realistically resolve on a BS
 - Fixed a bug where only the first result would be successfully logged to the console
+
+v1.31
+2026-05-28
+- Tweaked how FtHoF results are collected, improving efficiency
 */
 
 // Will this actually destroy finnless? Remains to be seen
@@ -57,12 +61,18 @@ function getFthofResult(spellCount,change = 0) {
   return choose(choices);
 }
 
-function isResolvable(index,spellsList) {
+function isResolvable(index,spellsList,spells) {
   let points = 0;
 
   if (spellsList[index][0] > 0.125 && spellsList[index][0] < 0.25) {
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < 7; i++) { 
       if (index+i >= spellsList.length) return 0;
+
+      if (spellsList[index+i][1] == 0) {
+        spellsList[index+i][1] = getFthofResult(spells+index+i);
+        spellsList[index+i][2] = getFthofResult(spells+index+i,1);
+      }
+      
       if ((spellsList[index+i][1] === "Building Special" || spellsList[index+i][2] === "Building Special") && spellsList[index+i][0] < 0.5) return 1;
       else if (spellsList[index+i][0] > 0.125 && spellsList[index+i][0] < 0.25) points += 0;
       else if ((spellsList[index+i][0] > 0.375 && spellsList[index+i][0] < 0.5) || (spellsList[index+i][0] > 0.75 && spellsList[index+i][0] < 0.875) || (spellsList[index+i][0] > 0.25 && spellsList[index+i][0] < 2/7)) points += 1;
@@ -135,6 +145,7 @@ function resetPrefs() {
 }
 
 function checkSpells() {
+  //let startTime = Date.now();
   let fthofs = [ ];
   let skips = [ ];
   let neededFthofsLocs = [ ];
@@ -144,11 +155,9 @@ function checkSpells() {
   // get all results in an aray before analyzing
   let spellsList = [ ];
   for (let i = spells; i < spells + Game.prefs.lookahead; i++) {
-    let spellRes = [ ];
+    let spellRes = [0,0,0];
     Math.seedrandom(Game.seed+'/'+i);
-    spellRes.push(Math.random());
-    spellRes.push(getFthofResult(i));
-    spellRes.push(getFthofResult(i,1));
+    spellRes[0] = Math.random();
     spellsList.push(spellRes);
   }
 
@@ -159,7 +168,7 @@ function checkSpells() {
   {
     // add g!fthofs to array
     if (spellsList[i][0] > 0.125 && spellsList[i][0] < 0.25 && Game.prefs.checkResolve == 0) fthofs.push(i);
-    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 2/7 && isResolvable(i,spellsList) == 1 && Game.prefs.checkResolve == 1) fthofs.push(i);
+    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 2/7 && isResolvable(i,spellsList,spells) == 1 && Game.prefs.checkResolve == 1) fthofs.push(i);
 
     if (Game.prefs.useSkips == 1) {
       // ra
@@ -204,6 +213,7 @@ function checkSpells() {
     PlaySound('snd/spellFail.mp3');
     Game.Notify("Failure...","No locations with specified settings were found.",[17,15]);
   }
+  //console.log(Date.now()-startTime);
 }
 
 Game.registerMod("Finnless Destroyer", {
