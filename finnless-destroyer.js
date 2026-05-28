@@ -26,7 +26,7 @@ v1.3
 
 v1.3.1
 2026-05-28
-- Tweaked how FtHoF results are collected, improving efficiency
+- Tweaked how FtHoF results are collected, improving efficiency nearly twofold
 */
 
 // Will this actually destroy finnless? Remains to be seen
