@@ -24,7 +24,7 @@ v1.3
 - Added an option to only add GFD FtHoFs is they could realistically resolve on a BS
 - Fixed a bug where only the first result would be successfully logged to the console
 
-v1.31
+v1.3.1
 2026-05-28
 - Tweaked how FtHoF results are collected, improving efficiency
 */
