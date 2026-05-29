@@ -83,6 +83,12 @@ function isResolvable(index,spellsList,spells) {
   else {
     for (let i = 1; i < 3; i++) {
       if (index+i >= spellsList.length) return 0;
+
+      if (spellsList[index+i][1] == 0) {
+        spellsList[index+i][1] = getFthofResult(spells+index+i);
+        spellsList[index+i][2] = getFthofResult(spells+index+i,1);
+      }
+      
       if ((spellsList[index+i][1] === "Building Special" || spellsList[index+i][2] === "Building Special") && spellsList[index+i][0] < 0.5) return 1;
       else if (spellsList[index+i][0] > 1/7 && spellsList[index+i][0] < 2/7) points += 0;
       else points += 1;
