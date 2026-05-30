@@ -31,7 +31,7 @@ v1.3.1
 v1.4
 2026-05-30
 - Fixed a bug where 7x offset could not be tracked
-- Improved efficiency again by changing how randoim values are collected
+- Improved efficiency again by changing how random values are collected
 - Reorganized the mod's options and added a heading and description
 - Added a button to export save with correct number of spells
 */
