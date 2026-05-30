@@ -137,7 +137,7 @@ function initFD() {
     '<div class="title">'+loc("Finnless Destroyer")+'</div>'+`));
 
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`import: ctrl+O)")+'</label></div>'+`,`import: ctrl+O)")+'</label></div>'+
-    '<div class="listing"><a class="option smallFancyButton" '+Game.clickStr+'="ExportSaveFD();PlaySound(\`snd/tick.mp3\`);">'+loc("Export FD save")+'</a><label>'+loc("Creates a modified save file where the number of spells cast matches the first result found by Finnless Destroyer")+'</label></div>'+`));
+    '<div class="listing"><a class="option smallFancyButton" '+Game.clickStr+'="ExportSaveFD();PlaySound(\`snd/tick.mp3\`);">'+loc("Export FD save")+'</a><label>'+loc("Create a modified save file where the number of spells cast matches the first result found by Finnless Destroyer")+'</label></div>'+`));
   
   // shift+F to check spells again
   AddEvent(window,'keydown',function(e) {
