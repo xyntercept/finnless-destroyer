@@ -96,10 +96,10 @@ function checkGrimoire() {
 }
 
 function WriteSaveFD(spellLoc) {
-  str = Game.WriteSave(2);
-  spells = String(Game.Objects["Wizard tower"].minigame.spellsCastTotal);
-  pre = str.substring(0,str.indexOf(" "+spells+" "));
-  post = str.substring(str.indexOf(" "+spells+" ")+spells.length+2);
+  const str = Game.WriteSave(2);
+  const spells = String(Game.Objects["Wizard tower"].minigame.spellsCastTotal);
+  const pre = str.substring(0,str.indexOf(" "+spells+" "));
+  const post = str.substring(str.indexOf(" "+spells+" ")+spells.length+2);
 
   return Base64.encode(pre+" "+spellLoc+" "+post);
 }
@@ -164,7 +164,7 @@ function checkSpells() {
   let fthofs = [ ];
   let skips = [ ];
   let neededFthofsLocs = [ ];
-  let spells = Game.Objects["Wizard tower"].minigame.spellsCastTotal;
+  const spells = Game.Objects["Wizard tower"].minigame.spellsCastTotal;
   let maxLength = Game.prefs.fthofRange;
 
   // get all results in an array before analyzing
@@ -178,17 +178,17 @@ function checkSpells() {
     if (checkFthof > 0 && spellRes[0] < 0.5) {
       Math.random();
       Math.random();
-      let call0 = Math.random();
-      let call1 = Math.random();
-      let call2 = Math.random();
-      let call3 = Math.random();
-      let call4 = Math.random();
-      let call5 = Math.random();
+      const call0 = Math.random();
+      const call1 = Math.random();
+      const call2 = Math.random();
+      const call3 = Math.random();
+      const call4 = Math.random();
+      const call5 = Math.random();
 
       if (call1 < 0.25 && call2 > 0.15) {
         let numElements = 3;
         if (call0 < 0.1) numElements+=3;
-        let bsIndex = numElements;
+        const bsIndex = numElements;
         numElements++;
         if (call3 < 0.0001) numElements++;
         if (call4 > bsIndex/numElements && call4 < (bsIndex+1)/numElements) spellRes[1] = 1;
@@ -196,7 +196,7 @@ function checkSpells() {
       if (spellRes[1] == 0 && call2 < 0.25 && call3 > 0.15) {
         let numElements = 3;
         if (call1 < 0.1) numElements+=3;
-        let bsIndex = numElements;
+        const bsIndex = numElements;
         numElements++;
         if (call4 < 0.0001) numElements++;
         if (call5 > bsIndex/numElements && call5 < (bsIndex+1)/numElements) spellRes[2] = 1;
@@ -273,12 +273,12 @@ Game.registerMod("Finnless Destroyer", {
   },
 
   save:function(){
-    let str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips +"|"+ Game.prefs.checkResolve;
+    const str = Game.prefs.lookahead +"|"+ Game.prefs.fthofRange +"|"+ Game.prefs.fthofNeeded +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips +"|"+ Game.prefs.checkResolve;
     return str;
   },
 
   load:function(str){
-    let prefs = str.split("|");
+    const prefs = str.split("|");
     Game.prefs.lookahead = parseInt(prefs[0]);
     Game.prefs.fthofRange = parseInt(prefs[1]);
     Game.prefs.fthofNeeded = parseInt(prefs[2]);
