@@ -34,6 +34,10 @@ v1.4
 - Improved efficiency again by changing how random values are collected
 - Reorganized the mod's options and added a heading and description
 - Added a button to export save with correct number of spells
+
+v1.4.1
+2026-06-02
+- Blocked bad-faith rehosts such as cookieclicker.ee from loading the mod
 */
 
 // Will this actually destroy finnless? Remains to be seen
@@ -269,6 +273,7 @@ function checkSpells() {
 
 Game.registerMod("Finnless Destroyer", {
   init:function(){
+	if (l("topbarFrenzy")) {Game.Notify(loc("Fake Cookie Clicker detected"),loc("This is a fake version that is trying to scam you. Use a good-faith rehost or play the real game."),[10,6]); return;};
     checkGrimoire();
   },
 
