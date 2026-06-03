@@ -141,6 +141,7 @@ function initFD() {
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="title">'+loc("Finnless Destroyer")+'</div>'+`));
 
+	// modified export save
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`import: ctrl+O)")+'</label></div>'+`,`import: ctrl+O)")+'</label></div>'+
     '<div class="listing"><a class="option smallFancyButton" '+Game.clickStr+'="ExportSaveFD();PlaySound(\`snd/tick.mp3\`);">'+loc("Export FD save")+'</a><label>'+loc("Create a modified save file where the number of spells cast matches the first result found by Finnless Destroyer")+'</label></div>'+`));
   
