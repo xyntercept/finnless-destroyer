@@ -91,10 +91,11 @@ function isResolvable(index,spellsList,spells) {
 function checkGrimoire() {
   let loadedFD = false;
   if (!Game.Objects["Wizard tower"].minigameLoaded) {
-    Game.Notify("Grimoire not loaded","Finnless cannot be destroyed if Grimoire is not loaded.",[0,7]);
+    Game.Notify("Grimoire not loaded","Finnless Destroyer will only initialize once Grimoire has been loaded.",[0,7]);
     Game.registerHook('logic',function(){if (Game.Objects["Wizard tower"].minigameLoaded && !loadedFD) {initFD(); loadedFD = true;}})
   }
   else {
+	loadedFD = true;
     initFD();
   }
 }
