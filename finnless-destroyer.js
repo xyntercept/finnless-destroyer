@@ -38,6 +38,10 @@ v1.4
 v1.4.1
 2026-06-02
 - Blocked bad-faith rehosts such as cookieclicker.ee from loading the mod
+
+v1.4.2
+2026-06-08
+- Made the result notification smaller to make the mod easier to use legally
 */
 
 // Will this actually destroy finnless? Remains to be seen
@@ -263,7 +267,7 @@ function checkSpells() {
     }
     firstComboLoc = neededFthofsLocs[0];
     console.log(neededFthofsLocs);
-    Game.Notify("Success!","Total of " + neededFthofsLocs.length + " locations found.<br><br>The first is at spell no. <b>" + neededFthofsLocs[0] + "</b>.<br><br> Go to the console to see them all!",[17,2]);
+    Game.Notify(neededFthofsLocs.length + " locations found","The first is at spell no. <b>" + neededFthofsLocs[0] + "</b>.",[17,2]);
   }
   else if (Game.prefs.notifyFailure == 1) {
     firstComboLoc = spells;
