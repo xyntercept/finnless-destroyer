@@ -42,6 +42,11 @@ v1.4.1
 v1.4.2
 2026-06-08
 - Made the result notification smaller to make the mod easier to use legally
+
+v1.4.3
+2026-06-16
+- Fixed a bug where the Export FD Save button would not work if there was a collision
+- Rewrote some of the offset detection code
 */
 
 // Will this actually destroy finnless? Remains to be seen
@@ -100,12 +105,9 @@ function checkGrimoire() {
 }
 
 function WriteSaveFD(spellLoc) {
-  const str = Game.WriteSave(2);
-  const spells = String(Game.Objects["Wizard tower"].minigame.spellsCastTotal);
-  const pre = str.substring(0,str.indexOf(" "+spells+" "));
-  const post = str.substring(str.indexOf(" "+spells+" ")+spells.length+2);
-
-  return Base64.encode(pre+" "+spellLoc+" "+post);
+  let spl = Game.WriteSave(2).split(" ");
+	spl[9] = spellLoc;
+  return Base64.encode(spl.join(" "));
 }
 
 function ExportSaveFD()
