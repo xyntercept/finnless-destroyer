@@ -65,9 +65,9 @@ function setFthofNeeded() {
 }
 
 function isResolvable(index,spellsList,spells) {
-  let points = 0;
 
   if (spellsList[index][0] > 0.125 && spellsList[index][0] < 0.25) {
+		let points = 0;
     for (let i = 1; i <= 7; i++) { 
       if (index+i >= spellsList.length) return 0;    
       if (spellsList[index+i][1] == 1 || spellsList[index+i][2] == 1) return 1;
@@ -79,14 +79,10 @@ function isResolvable(index,spellsList,spells) {
     }
   }
   else {
-    for (let i = 1; i <= 2; i++) {
-      if (index+i >= spellsList.length) return 0;
-      if ((spellsList[index+i][1] == 1 || spellsList[index+i][2] == 1)) return 1;
-      else if (i == 2) break;
-      else if (spellsList[index+i][0] > 1/7 && spellsList[index+i][0] < 2/7) points += 0;
-      else points += 1;
-      if (points > 1) return 0;
-    }
+    if (index+1 >= spellsList.length) return 0;
+    else if ((spellsList[index+1][1] == 1 || spellsList[index+1][2] == 1)) return 1;
+		else if (index+2 >= spellsList.length) return 0;
+    else if ((spellsList[index+2][1] == 1 || spellsList[index+2][2] == 1)) return 1;
   }
   return 0;
 }
