@@ -167,7 +167,7 @@ function resetPrefs() {
 }
 
 function checkSpells() {
-  //let startTime = Date.now();
+  let startTime = Date.now();
   let fthofs = [ ];
   let skips = [ ];
   let neededFthofsLocs = [ ];
@@ -271,7 +271,7 @@ function checkSpells() {
     PlaySound('snd/spellFail.mp3');
     Game.Notify("Failure...","No locations with specified settings were found.",[17,15]);
   }
-  //console.log(Date.now()-startTime);
+  console.log("Runtime: " + Date.now()-startTime + " ms");
 }
 
 Game.registerMod("Finnless Destroyer", {
