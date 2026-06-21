@@ -271,7 +271,7 @@ function checkSpells() {
     PlaySound('snd/spellFail.mp3');
     Game.Notify("Failure...","No locations with specified settings were found.",[17,15]);
   }
-  console.log("Runtime: " + Date.now()-startTime + " ms");
+  console.log("Runtime: " + (Date.now()-startTime) + " ms");
 }
 
 Game.registerMod("Finnless Destroyer", {
