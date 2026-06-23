@@ -47,6 +47,10 @@ v1.4.3
 2026-06-16
 - Fixed a bug where the Export FD Save button would not work if there was a collision
 - Rewrote some of the offset detection code
+
+v1.4.4
+2026-06-23
+- Fixed a bug where the Export FD Save wouldn't work if bakery name contained a space
 */
 
 // Will this actually destroy finnless? Remains to be seen
@@ -105,8 +109,13 @@ function checkGrimoire() {
 }
 
 function WriteSaveFD(spellLoc) {
+	// oops, forgot bakery name can have spaces
+	let name = Game.bakeryName;
+	let spaces = 0;
+	while (name.indexOf(" ") >= 0) {spaces++; name = name.substring(name.indexOf(" ")+1)};
+	
   let spl = Game.WriteSave(2).split(" ");
-	spl[9] = spellLoc;
+  spl[9+spaces] = spellLoc;
   return Base64.encode(spl.join(" "));
 }
 
