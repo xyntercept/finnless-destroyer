@@ -51,11 +51,6 @@ v1.4.3
 v1.4.4
 2026-06-23
 - Fixed a bug where the Export FD Save wouldn't work if bakery name contained a space
-
-v1.4.5
-2026-08-06
-- Rewrote code to be more organized and readable, such as how FtHoF results are found
-- Changed some functions so they could work while being run outside the game
 */
 
 // Used for the Export FD Save button, stores the spellcount of the first result found
@@ -184,7 +179,7 @@ function isResolvable(index,spellsList) {
   return 0;
 }
 
-// Returns FtHoF result of a given spell as a string
+// Not currently used for anything, kind of messy so I'd have to rework it a bit to use it
 function getFthofResult(backfire,seed="aaaaa",spell=-1,DF=0) {
 	if (spell>-1) {Math.seedrandom(seed+"/"+spell); Math.random();};
 	Math.random();
@@ -238,10 +233,31 @@ function checkSpells(seed,startSpells,lookahead,gFthofNeeded,gFthofRange,useSkip
 
 		// If there was a G!FtHoF recently, find if there was a BS
     if (checkFthof > 0 && spellRes[0] < 0.5) {
-      let fthofResult = getFthofResult(0);
-			if (fthofResult[0] == "building special") spellRes[1] = 1;
-			else if (fthofResult[1] == "building special") spellRes[2] = 1;
-      if (spellRes[1]+spellRes[2] > 0) checkFthof = 0;
+      Math.random();
+      Math.random();
+      const call0 = Math.random();
+      const call1 = Math.random();
+      const call2 = Math.random();
+      const call3 = Math.random();
+      const call4 = Math.random();
+      const call5 = Math.random();
+
+      if (call1 < 0.25 && call2 > 0.15) {
+        let numElements = 3;
+        if (call0 < 0.1) numElements+=3;
+        const bsIndex = numElements;
+        numElements++;
+        if (call3 < 0.0001) numElements++;
+        if (call4 > bsIndex/numElements && call4 < (bsIndex+1)/numElements) spellRes[1] = 1;
+      }
+      if (spellRes[1] == 0 && call2 < 0.25 && call3 > 0.15) {
+        let numElements = 3;
+        if (call1 < 0.1) numElements+=3;
+        const bsIndex = numElements;
+        numElements++;
+        if (call4 < 0.0001) numElements++;
+        if (call5 > bsIndex/numElements && call5 < (bsIndex+1)/numElements) spellRes[2] = 1;
+      }
     }
 		
     if (checkFthof > 0) checkFthof--;
