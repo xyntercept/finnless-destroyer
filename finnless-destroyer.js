@@ -51,6 +51,11 @@ v1.4.3
 v1.4.4
 2026-06-23
 - Fixed a bug where the Export FD Save wouldn't work if bakery name contained a space
+
+v1.4.5
+2026-09-13
+- Made some functions independent of game settings and values
+- Fixed a bug where the Check With Current Settings button did not work
 */
 
 // Used for the Export FD Save button, stores the spellcount of the first result found
@@ -118,7 +123,7 @@ function initFD() {
 
   // Settings buttons
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
-    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="checkSpells();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings. Shortcut: shift+F")+')</label></div>'+`));
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="currentGameResults();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings. Shortcut: shift+F")+')</label></div>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing">'+Game.WritePrefButton('notifyFailure','notifyFailureButton',loc("Notify on failure ")+ON,loc("Notify on failure ")+OFF)+'<label>('+loc("when reincarnating, notify even if no results were found")+')</label><br>'+'</div>'+`));
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
@@ -144,12 +149,12 @@ function initFD() {
   
   // shift+F to check spells again
   AddEvent(window,'keydown',function(e) {
-    if (e.shiftKey && e.keyCode==70) showResults(checkSpells(Game.seed,Game.Objects["Wizard tower"].minigame.spellsCastTotal,Game.prefs.lookahead,Game.prefs.gFthofNeeded,Game.prefs.gFthofRange,Game.prefs.useSkips,Game.prefs.checkResolve));
+    if (e.shiftKey && e.keyCode==70) currentGameResults();
   })
 
   // Checks spells upon reincarnation, resets settings upon savewipe
-  Game.registerHook('reincarnate',function(){showResults(checkSpells(Game.seed,Game.Objects["Wizard tower"].minigame.spellsCastTotal,Game.prefs.lookahead,Game.prefs.gFthofNeeded,Game.prefs.gFthofRange,Game.prefs.useSkips,Game.prefs.checkResolve))});
-  Game.registerHook('reset',function(wipe){if (wipe) resetPrefs()});
+  Game.registerHook('reincarnate',function(){currentGameResults();});
+  Game.registerHook('reset',function(wipe){if (wipe) resetPrefs();});
 }
 
 // Determines if a G!FtHoF could reasonably resolve on a BS
@@ -331,6 +336,9 @@ function showResults(comboLocs) {
 		}
   }
 }
+
+// Presents results for the current configuration of the game and the settings
+function currentGameResults() {showResults(checkSpells(Game.seed,Game.Objects["Wizard tower"].minigame.spellsCastTotal,Game.prefs.lookahead,Game.prefs.gFthofNeeded,Game.prefs.gFthofRange,Game.prefs.useSkips,Game.prefs.checkResolve));}
 
 Game.registerMod("Finnless Destroyer", {
   init:function(){
