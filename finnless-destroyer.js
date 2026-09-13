@@ -56,6 +56,7 @@ v1.4.5
 2026-09-13
 - Made some functions independent of game settings and values
 - Fixed a bug where the Check With Current Settings button did not work
+- Added "slivers" unit of measurement (1M spells/s; this comes from autorouting GC)
 */
 
 // Used for the Export FD Save button, stores the spellcount of the first result found
