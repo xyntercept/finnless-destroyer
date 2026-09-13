@@ -310,7 +310,7 @@ function checkSpells(seed,startSpells,lookahead,gFthofNeeded,gFthofRange,useSkip
   Math.seedrandom();
 	const elapsedTime = Date.now()-startTime;
 	console.log("Runtime: " + elapsedTime + " ms");
-	console.log((lookahead/elapsedTime) + " spells/ms");
+	console.log((Math.round((lookahead/elapsedTime)*100)/100) + " spells/ms");
 	return comboLocs;
 }
 
