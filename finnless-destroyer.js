@@ -61,8 +61,9 @@ v1.4.5
 v1.5
 2026-10-16
 - Turned queries into objects
-- Added a setting for max offset
-- Added a setting to disable conversions to FtHoF
+- Added more settings for checking resolves (max offset length and whether to use FtHoF conversions)
+- Changed default values for settings
+- Changed range to spread in order to align with Combo Finder
 */
 
 // Used for the Export FD Save button, stores the spellcount of the first result found
