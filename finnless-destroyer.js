@@ -57,6 +57,12 @@ v1.4.5
 - Made some functions independent of game settings and values
 - Fixed a bug where the Check With Current Settings button did not work
 - Added "slivers" unit of measurement (1M spells/s; this comes from autorouting GC)
+
+v1.5
+2026-10-16
+- Turned queries into objects
+- Added a setting for max offset
+- Added a setting to disable conversions to FtHoF
 */
 
 // Used for the Export FD Save button, stores the spellcount of the first result found
@@ -68,24 +74,31 @@ function setLookahead() {
   l('textareaPrompt').focus();
 }
 
-function setGFthofRange() {
-  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.gFthofRange=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+function setMaxSpread() {
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.maxSpread=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
   l('textareaPrompt').focus();
 }
 
-function setGFthofNeeded() {
-  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.gFthofNeeded=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+function setCombo() {
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.combo=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
+  l('textareaPrompt').focus();
+}
+
+function setMaxOffset() {
+  Game.Prompt('<id ImportSave><h3>'+"Input value"+'</h3><div class="block">'+loc("Input to modify the variable.")+'<div id="importError" class="warning" style="font-weight:bold;font-size:11px;"></div></div><div class="block"><textarea id="textareaPrompt" style="width:100%;height:128px;">'+'</textarea></div>',[[loc("Confirm"),';Game.ClosePrompt(); Game.prefs.maxOffset=Number((l(\'textareaPrompt\').value));'],loc("Cancel")]);
   l('textareaPrompt').focus();
 }
 
 // Resets mod settings to default values
 function resetPrefs() {
-  Game.prefs.lookahead = 10000;
-  Game.prefs.gFthofRange = 14;
-  Game.prefs.gFthofNeeded = 8;
-  Game.prefs.notifyFailure = 0;
-  Game.prefs.useSkips = 1;
-  Game.prefs.checkResolve = 1;
+	Game.prefs.lookahead = 500;
+	Game.prefs.maxSpread = 2;
+	Game.prefs.combo = 6;
+	Game.prefs.notifyFailure = 0;
+	Game.prefs.useSkips = 1;
+	Game.prefs.checkResolve = 1;
+	Game.prefs.maxOffset = 2;
+	Game.prefs.useConversions = 0;
 }
 
 // Finds the location of alltime spells cast, and replaces it with the location of the first result
@@ -122,26 +135,39 @@ function initFD() {
   Game.Notify("Finnless destroyer","Open options menu to configure mod settings. If a desired seed is found, you will be notified upon reincarnation.",[17,2]);
   resetPrefs();
 
-  // Settings buttons
+  // Check with current settings
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="currentGameResults();">'+loc("Check with current settings")+'</a><label>('+loc("Run the Finnless Destroyer again with the current settings. Shortcut: shift+F")+')</label></div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  // Notify on failure
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing">'+Game.WritePrefButton('notifyFailure','notifyFailureButton',loc("Notify on failure ")+ON,loc("Notify on failure ")+OFF)+'<label>('+loc("when reincarnating, notify even if no results were found")+')</label><br>'+'</div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  // Use skips
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing">'+Game.WritePrefButton('useSkips','useSkipsButton',loc("Skip SE success & RA ")+ON,loc("Skip SE success & RA ")+OFF)+'<label>('+loc("skip GFD casts of Spontaneous Edifice success and Resurrect Abomination when counting combo length")+')</label><br>'+'</div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  // Use conversions
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+    '<div class="listing">'+Game.WritePrefButton('useConversions','useConversionsButton',loc("Use GFD conversions ")+ON,loc("Use GFD conversions ")+OFF)+'<label>('+loc("partially consider GFDs with random seed between 0.2500 and 0.3333 which can be converted to FtHoF")+')</label><br>'+'</div>'+`));
+	// Set max offset
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setMaxOffset();">'+loc("Set max offset")+'</a><label>('+loc("if resolves are checked, set how many future spells are checked for each GFD FtHoF; current value: <b>" + Game.prefs.maxOffset + "</b>")+')</label></div>'+`));
+	// Check resolve
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing">'+Game.WritePrefButton('checkResolve','checkResolveButton',loc("Check G!FtHoF resolve ")+ON,loc("Check G!FtHoF resolve ")+OFF)+'<label>('+loc("look for nearby building specials that GFD FtHoFs could resolve on, including offset abuse")+')</label><br>'+'</div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
-    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setGFthofRange();">'+loc("Set range for G!FtHoFs")+'</a><label>('+loc("set the range within which the GFD FtHoFs must lie; current value: <b>" + Game.prefs.gFthofRange + "</b>")+')</label></div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
-    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setGFthofNeeded();">'+loc("Set desired G!FtHoFs")+'</a><label>('+loc("set how many GFD FtHoFs near each other to search for; current value: <b>" + Game.prefs.gFthofNeeded + "</b>")+')</label></div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  // Set max spread
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setMaxSpread();">'+loc("Set max spread")+'</a><label>('+loc("set the maximum number unskippable useless spells lying between GFD FtHoFs; current value: <b>" + Game.prefs.maxSpread + "</b>")+')</label></div>'+`));
+  // Set combo
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+    '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setCombo();">'+loc("Set combo size")+'</a><label>('+loc("set how many GFD FtHoFs near each other to search for; current value: <b>" + Game.prefs.combo + "</b>")+')</label></div>'+`));
+  // Set lookahead
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing"><a class="option smallFancyButton"'+Game.clickStr+'="setLookahead();">'+loc("Set lookahead")+'</a><label>('+loc("set the maximum amount of casts to search; current value: <b>" + Game.prefs.lookahead + "</b>")+')</label></div>'+`));
 
-  // FD heading and description
+  // FD description
   eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="listing">'+loc("Finnless Destroyer is a mod designed for the Finnless ruleset, similar to the combo finder but implemented into the game. It's designed for very large finnless combos (decacasts or higher).<br><br>For more information and a tutorial about this mod, see <a href='//tinyurl.com/FinnlessDestroyer' target='_blank'>this guide</a>.")+'</div>'+`));
-  eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
+  // FD heading
+	eval('Game.UpdateMenu='+Game.UpdateMenu.toString().replace(`created by mods")+')</label></div>':'')+`,`created by mods")+')</label></div>':'')+
     '<div class="title">'+loc("Finnless Destroyer")+'</div>'+`));
 
 	// Export FD Save button
@@ -159,12 +185,12 @@ function initFD() {
 }
 
 // Determines if a G!FtHoF could reasonably resolve on a BS
-function isResolvable(index,spellsList) {
+function isResolvable(index,spellsList,maxOffset,useConversions) {
   if (spellsList[index][0] > 0.125 && spellsList[index][0] < 0.25) {
 	// For spells that are G!FtHoF with a full pool, free skips give 1 point while non-free skips give 2 points
 	// If a spell has accumulated 3 points, or checked past 7 spells, it is marked as uncastable
 	let points = 0;
-    for (let i = 1; i <= 7; i++) { 
+    for (let i = 1; i <= maxOffset; i++) { 
       if (index+i >= spellsList.length) return 0;    
       if (spellsList[index+i][1] == 1 || spellsList[index+i][2] == 1) return 1;
       else if (i == 7) break;
@@ -174,12 +200,12 @@ function isResolvable(index,spellsList) {
     }
   }
 		
-  else {
+  else if (useConversions == 1) {
 		// For spells that aren't G!FtHoF with a full pool, a BS must be found within 2 spells
-    if (index+1 >= spellsList.length) return 0;
-    else if ((spellsList[index+1][1] == 1 || spellsList[index+1][2] == 1)) return 1;
-		else if (index+2 >= spellsList.length) return 0;
-    else if ((spellsList[index+2][1] == 1 || spellsList[index+2][2] == 1)) return 1;
+		for (let i = 1; i <= Math.min(2,maxOffset); i++) {
+			if (index+1 >= spellsList.length) return 0;
+			else if ((spellsList[index+i][1] == 1 || spellsList[index+i][2] == 1)) return 1;
+		}
   }
 	
   return 0;
@@ -192,13 +218,13 @@ function getFthofResult(backfire,seed="aaaaa",spell=-1,DF=0) {
 	Math.random();
 	let results = [ ];
 	
-	let calls = [ ]
+	let calls = [ ];
 	if (backfire == 0) calls = [Math.random(),Math.random(),Math.random(),Math.random(),Math.random(),Math.random()];
 	else calls = [Math.random(),Math.random(),Math.random(),Math.random()];
 	
 	for (let change = 0; change <= 1; change++) {
 		if (backfire == 0) {
-			let pool = [ ]
+			let pool = [ ];
 			pool.push("frenzy","lucky");
 			if (DF == 0) pool.push("click frenzy");
 			if (calls[0+change] < 0.1) pool.push("storm","storm","blab");
@@ -222,17 +248,17 @@ function getFthofResult(backfire,seed="aaaaa",spell=-1,DF=0) {
 }
 
 // Check spells to find desired combos
-function checkSpells(seed,startSpells,lookahead,gFthofNeeded,gFthofRange,useSkips,checkResolve) {
+function checkSpells(seed,startingSpellsCast,query) {
   let startTime = Date.now();
   let gFthofs = [ ];
   let skips = [ ];
   let comboLocs = [ ];
-  let maxLength = gFthofRange;
+  let maxLength = query.combo+query.maxSpread;
 
   // Get all results in an array before analyzing
   let spellsList = [ ];
   let checkFthof = 0;
-  for (let i = startSpells; i < startSpells+lookahead; i++) {
+  for (let i = startingSpellsCast; i < startingSpellsCast+query.lookahead; i++) {
     let spellRes = [0,0,0];
     Math.seedrandom(seed+'/'+i);
     spellRes[0] = Math.random();
@@ -274,19 +300,19 @@ function checkSpells(seed,startSpells,lookahead,gFthofNeeded,gFthofRange,useSkip
   }
 
 	// Check for combos
-  for (let i = 0; i < lookahead; i++) {
+  for (let i = 0; i < query.lookahead; i++) {
     // Add g!fthofs to array
-    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 0.25 && checkResolve == 0) gFthofs.push(i);
-    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 2/7 && isResolvable(i,spellsList) == 1 && checkResolve == 1) gFthofs.push(i);
+    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 0.25 && query.checkResolve == 0) gFthofs.push(i);
+    if (spellsList[i][0] > 0.125 && spellsList[i][0] < 2/7 && isResolvable(i,spellsList,query.maxOffset,query.useConversions) == 1 && query.checkResolve == 1) gFthofs.push(i);
 
-    if (useSkips == 1) {
+    if (query.useSkips == 1) {
       // RA
       if (spellsList[i][0] > 0.75 && spellsList[i][0] < 0.875) {
         skips.push(i);
         maxLength++;
       }
       // SE success
-      else if (spellsList[i][0] > 0.375 && spellsList[i][0] < 0.5 && i+1 < lookahead) {
+      else if (spellsList[i][0] > 0.375 && spellsList[i][0] < 0.5 && i+1 < query.lookahead) {
         if (spellsList[i+1][0] < 0.5) {
           skips.push(i)
           maxLength++;
@@ -301,18 +327,19 @@ function checkSpells(seed,startSpells,lookahead,gFthofNeeded,gFthofRange,useSkip
 
     while (gFthofs[0] <= i-maxLength) gFthofs.shift();
 
-    if (gFthofs.length >= gFthofNeeded && comboLocs.length > 0) {
-      if (comboLocs[comboLocs.length-1][0]-1 < i+startSpells-maxLength) comboLocs.push([i+1+startSpells,maxLength]);
+    if (gFthofs.length >= query.combo && comboLocs.length > 0) {
+			// Prevents combos from being double-counted
+      if (comboLocs[comboLocs.length-1][0]-1 < i+startingSpellsCast-maxLength) comboLocs.push([i+1+startingSpellsCast,maxLength]);
     }
-    else if (gFthofs.length >= gFthofNeeded) comboLocs.push([i+1+startSpells,maxLength]);
+    else if (gFthofs.length >= query.combo) comboLocs.push([i+1+startingSpellsCast,maxLength]);
   }
 
   // Unseed to prevent CMUM 2.0
   Math.seedrandom();
 	const elapsedTime = Date.now()-startTime;
 	console.log("Runtime: " + elapsedTime + " ms");
-	console.log((Math.round((lookahead/elapsedTime)*100)/100) + " spells/ms");
-	console.log((Math.round(lookahead/elapsedTime)/1000) + " slivers");
+	console.log((Math.round((query.lookahead/elapsedTime)*100)/100) + " spells/ms");
+	console.log((Math.round(query.lookahead/elapsedTime)/1000) + " slivers");
 	return comboLocs;
 }
 
@@ -340,7 +367,18 @@ function showResults(comboLocs) {
 }
 
 // Presents results for the current configuration of the game and the settings
-function currentGameResults() {showResults(checkSpells(Game.seed,Game.Objects["Wizard tower"].minigame.spellsCastTotal,Game.prefs.lookahead,Game.prefs.gFthofNeeded,Game.prefs.gFthofRange,Game.prefs.useSkips,Game.prefs.checkResolve));}
+function currentGameResults() {
+	const query = {
+		lookahead: Game.prefs.lookahead,
+		maxSpread: Game.prefs.maxSpread,
+		combo: Game.prefs.combo,
+		useSkips: Game.prefs.useSkips,
+		checkResolve: Game.prefs.checkResolve,
+		maxOffset: Game.prefs.maxOffset,
+		useConversions:Game.prefs.useConversions
+	};
+	showResults(checkSpells(Game.seed,Game.Objects["Wizard tower"].minigame.spellsCastTotal,query));
+}
 
 Game.registerMod("Finnless Destroyer", {
   init:function(){
@@ -350,17 +388,22 @@ Game.registerMod("Finnless Destroyer", {
   },
 
   save:function(){
-    const str = Game.prefs.lookahead +"|"+ Game.prefs.gFthofRange +"|"+ Game.prefs.gFthofNeeded +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips +"|"+ Game.prefs.checkResolve;
+    const str = Game.prefs.lookahead +"|"+ Game.prefs.maxSpread +"|"+ Game.prefs.combo +"|"+ Game.prefs.notifyFailure +"|"+ Game.prefs.useSkips +"|"+ Game.prefs.checkResolve +"|"+ Game.prefs.maxOffset +"|"+ Game.prefs.useConversions;
     return str;
   },
 
   load:function(str){
     const prefs = str.split("|");
-    Game.prefs.lookahead = parseInt(prefs[0]);
-    Game.prefs.gFthofRange = parseInt(prefs[1]);
-    Game.prefs.gFthofNeeded = parseInt(prefs[2]);
-    Game.prefs.notifyFailure = parseInt(prefs[3]);
-    Game.prefs.useSkips = parseInt(prefs[4]);
-    Game.prefs.checkResolve = parseInt(prefs[5]);
+		
+		Game.prefs.lookahead = parseInt(prefs[0]);
+		Game.prefs.maxSpread = parseInt(prefs[1]);
+		Game.prefs.combo = parseInt(prefs[2]);
+		Game.prefs.notifyFailure = parseInt(prefs[3]);
+		Game.prefs.useSkips = parseInt(prefs[4]);
+		Game.prefs.checkResolve = parseInt(prefs[5]);
+		Game.prefs.maxOffset = parseInt(prefs[6]);
+		Game.prefs.useConversions = parseInt(prefs[7]);
+
+		for (let i = 0; i < 8; i++) if (isNaN(parseInt(prefs[i]))) resetPrefs();
   }
 });
